@@ -25,6 +25,17 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 
 
 ## Code Steps
+-  composer create-project laravel/laravel laravelhotel
+- composer install
+- npm install
+- create database laravelhoteldb;
+- /db config
+- php artisan migrate
+- /seeding
+- composer require laravel/breeze --dev
+- php artisan breeze:install
+- npm install && npm run dev
+- php artisan migrate:fresh
 
 
 
