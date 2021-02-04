@@ -1,5 +1,12 @@
-@extends('layouts.app')
-@section('content')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Welcome') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+
 
 <!-- This example requires Tailwind CSS v2.0+ -->
 <div class="relative bg-white overflow-hidden">
@@ -39,8 +46,8 @@
   </div>
 </div>
 
-@section('footer')
-<h1>footer section </h1>
-@endsection
-@endsection
+    </div>
+</x-app-layout>
+
+
 
