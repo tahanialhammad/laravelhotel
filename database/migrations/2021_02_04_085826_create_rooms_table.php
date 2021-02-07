@@ -25,6 +25,8 @@ class CreateRoomsTable extends Migration
             $table->tinyInteger('beds', false, true);
             $table->text('description');
             $table->string('image_path_1');
+            $table->string('image_path_2')->nullable();
+            $table->string('image_path_3')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -9,7 +9,7 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
         <!-- Styles -->
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
@@ -21,22 +21,24 @@
             @include('layouts.navigation')
 
             <!-- Page Heading -->
+            @hasSection('header')
             <header class="bg-white shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {{ $header }}
+                @yield('header')
                 </div>
             </header>
+            @endif
 
             <!-- Page Content -->
             <main>
                 {{ $slot }}
             </main>
 
-             <!-- Footer Content -->
-             <footer>
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                @yield('footer')
-                </div>
+            <!-- Footer Content -->
+            <footer>
+            <p class="text-center">
+                &copy; Wotahwi Groep bij CodeGorilla
+            </p>
             </footer>
         </div>
     </body>
