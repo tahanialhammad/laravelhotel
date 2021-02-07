@@ -22,11 +22,13 @@ class RoomFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->word(),
-            'price_night' => $this->faker->randomFloat(2, 30, 200),
-            'beds' => $this->faker->numberBetween(1, 9),
-            'description' => $this->faker->paragraph(),
-            'image_path_1' => $this->faker->imageUrl(640, 480, 'room', true)
+                'name' => $this->faker->word(),
+                'price_night' => $this->faker->randomFloat(2, 30, 200),
+                'beds' => $this->faker->numberBetween(1, 9),
+                'description' => $this->faker->paragraph(),
+                'image_path_1' => $this->faker->imageUrl(640, 480, 'room', true),
+                'image_path_2' => $this->faker->imageUrl(640, 480, 'room', true),
+                'image_path_3' => $this->faker->imageUrl(640, 480, 'room', true),
         ];
     }
 }

@@ -36,7 +36,8 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 - php artisan breeze:install
 - npm install && npm run dev
 - php artisan migrate:fresh
-
-
-
-
+- php artisan make:model Room -fm
+- php artisan make:controller RoomController --model="Room"
+- php artisan make:model Reservation -fm
+- php artisan migrate:fresh --seed
+- composer dump-autoload
