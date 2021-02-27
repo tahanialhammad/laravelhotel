@@ -9,6 +9,8 @@ use DatePeriod;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PayController;
+
 
 class ReservationController extends Controller
 {
@@ -27,12 +29,13 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Room $room = null)
     {
         $bookedDates = $this->getBookedDates();
 
         return view('reservations.create', [
-            'rooms' => Room::select('id', 'name', 'price_night as price', 'beds')->get(),
+            'chosen_room' => $room,
+            'rooms' => Room::select('id', 'name', 'price_night as price')->get(),
             'bookedDates' => $bookedDates
             ]);
     }
@@ -45,8 +48,19 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes = request(['room_id', 'start_date', 'end_date']);
-        $attributes['user_id'] = Auth::user()->id;
+        // dd($request->all());
+        $validated = $request->validate([
+            'room_id' => 'required|integer|exists:\App\Models\Room,id',
+            'start_date' => 'required|string|after_or_equal:today',
+            'end_date' => 'required|string|after:start_date',
+            'persons' => 'required|integer|min:1|max:10'
+        ]);
+
+        $attributes = [
+            'start_date' => new DateTime($validated['start_date']),
+            'end_date' => new DateTime($validated['end_date']),
+            'user_id' => Auth::user()->id
+        ];
 
         // Get total price
         $nights = date_diff(
@@ -57,12 +71,19 @@ class ReservationController extends Controller
         $priceNight = Room::findOrFail($request['room_id'])->value('price_night');
         $attributes['price_total'] = $nights * $priceNight;
 
+        // Placeholder for payment system
         $attributes['is_payed'] = 0;
+
+        // validate request
 
         $reservation = new Reservation($attributes);
         $reservation->save();
 
-        return redirect(route('reservations.show', ['reservation' => $reservation]));
+        $reservation->room()->attach($request['room_id'], ['unit_price' => $priceNight, 'vat' => 0, 'quantity' => $nights]);
+
+        // PayController::preparePayment($reservation);
+        // return redirect(route('reservations.show', ['reservation' => $reservation]));
+        return redirect("/pay/$reservation->id");
     }
 
     /**
@@ -73,7 +94,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        return 'Reservatie gelukt';
+        return view('admin.reservations-show', ['reservation' => Reservation::findOrFail($reservation->id)]);
     }
 
     /**
@@ -84,7 +105,7 @@ class ReservationController extends Controller
      */
     public function edit(Reservation $reservation)
     {
-        //
+        return view('admin.reservations-edit', ['reservation' => Reservation::findOrFail($reservation->id)]);
     }
 
     /**
@@ -96,7 +117,10 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
-        //
+        // validate request
+        // save update to db
+        // return message
+        return 'Reservering informatie is aangepast';
     }
 
     /**
@@ -107,10 +131,11 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
-        //
+        Reservation::destroy($reservation);
+        return redirect('admin.dashboard');
     }
 
-    public function getBookedDates()
+    protected function getBookedDates()
     {
         $reservations = Reservation::where('end_date', '>', date('Y-m-d'))->get();
 
@@ -120,14 +145,7 @@ class ReservationController extends Controller
             $begin = new DateTime($reservation->start_date);
             $end = new DateTime($reservation->end_date);
 
-            // $end = $end->modify('+1 day');
-
-            $interval = new DateInterval('P1D');
-            $daterange = new DatePeriod($begin, $interval, $end);
-
-            foreach ($daterange as $date) {
-                array_push($bookedDates, $date->format('Y-m-d'));
-            }
+            $bookedDates[$reservation->room[0]->id][] = ['from' => $begin->format('d-m-Y'), 'to' => $end->format('d-m-Y')];
         }
 
         return $bookedDates;

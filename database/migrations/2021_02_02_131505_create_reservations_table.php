@@ -15,15 +15,12 @@ class CreateReservationsTable extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreignId('room_id');
-            $table->foreign('room_id')->references('id')->on('rooms');
+            $table->foreignId('user_id')->constrained();
             $table->date('start_date');
             $table->date('end_date');
             $table->decimal(
                 'price_total',
-                8,
+                10,
                 2,
                 true
             );

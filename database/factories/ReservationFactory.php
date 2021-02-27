@@ -6,6 +6,7 @@ use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
 
 class ReservationFactory extends Factory
 {
@@ -21,13 +22,20 @@ class ReservationFactory extends Factory
      *
      * @return array
      */
+    public function configure()
+    {
+        return $this->afterCreating(function (Reservation $reservation) {
+            $room = $this->faker->randomElement(Room::all());
+            $reservation->room()->attach($room, ['unit_price' => $room->price_night,'vat'=> 0, 'quantity' => rand(1, 10)]);
+        });
+    }
+
     public function definition()
     {
         $startDate = $this->faker->dateTimeBetween('now', '+2 years');
         $endDate = $this->faker->dateTimeInInterval($startDate, '+3 weeks');
         return [
             'user_id' => User::factory(),
-            'room_id' => $this->faker->numberBetween(1, 4),
             'start_date' => $startDate,
             'end_date' => $endDate,
             'price_total' => $this->faker->randomFloat(2, 30, 5000),
